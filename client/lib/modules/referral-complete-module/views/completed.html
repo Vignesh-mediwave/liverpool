@@ -1,0 +1,275 @@
+{% extends "layout.html" %}
+{% block extraBody %}
+<script src="/modules/referral-complete-module/js/completed.js"></script>
+{% endblock %}
+{% block main
+%}
+<div id="completed-form" class="py-4 main-min-height">
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+   
+    {% raw %}
+    <div class="secondary-content-area col-md-9 col-sm-11 col-11 col-lg-6 col-xl-6 mx-auto" v-cloak>
+        <div class="px-4 py-3 py-md-4">
+            <div class="col-md-8 col-sm-12 col-12 mx-auto toster-container">
+                <div class="px-2 py-2 mt-md-3 mt-4">
+                    <p class="text-center m-0 py-2">
+                        <img src="/modules/my-apostrophe-assets/img/4.svg" alt="">
+                    </p>
+                    <p class="completed-toast-text text-center m-0 py-2">Your reference number</p>
+                    <h3 class="completed-toast-header text-center m-0 py-2">{{reference_code}}</h3>
+                </div>
+            </div>
+            <p v-if="loginFlag=='true'" class="referral-feedback col-md-8 mx-auto text-center m-0 py-2">We have sent
+                you a confirmation email.
+            </p>
+        </div>
+
+        <div v-if="ackObj.role=='professional' && ackObj.professional_email"
+            class="pt-4 pt-md-4 pb-2 pb-md-4 text-center mb-0 d-none">
+            <button type="button" @click="sendReferralToMe()"
+                class="btn px-md-4 py-2 py-md-1 px-1 px-sm-3 col-md-4 col-lg-6 col-xl-6 col-sm-9 col-9">
+                <span class="btn-quaternary-text">Send me a copy
+                </span>
+            </button>
+        </div>
+
+
+        <div v-if="showSignUpForm" class="pt-2 pb-2 pt-md-4 pb-md-1">
+            <div class="px-1 px-sm-2 py-2 col-md-10 col-sm-12 col-12 mx-auto">
+                <div class="py-3">
+                    <h2 class="home-header-secondary  pb-3">Create an account for easy access to your referral
+                        information</h2>
+                    <h2 class="home-header-secondary">Setting up your password</h2>
+                    <span class="content-text ">Choose a password to create an account</span>
+                </div>
+                <form>
+                    <div class="form-group py-2 m-0">
+                        <label for="refEmail" class="auth-font my-1">Email</label>
+                        <input autocomplete="off" type="text" placeholder="Enter your email"
+                            class="form-control auth-border input-bg-form-control" id="refEmail"
+                            v-model="refSignUpData.email" @input="trimWhiteSpace($event,'refSignUpData','email')">
+                        <div class="invalid-feedback px-1 d-none"
+                            v-bind:class="{ 'd-block': (isFormSubmitted && !refSignUpData.email),'invalid-fields':!refSignUpData.email }">
+                            You must provide an email.
+                        </div>
+                        <div class="invalid-feedback d-none"
+                            v-bind:class="{ 'd-block': (isFormSubmitted && refSignUpData.email && !emailRegex.test(refSignUpData.email)),'invalid-fields':(refSignUpData.email && !emailRegex.test(refSignUpData.email)) }">
+                            You must provide a valid email.
+                        </div>
+                    </div>
+
+                    <div class="readOnly-class form-group py-2 m-0">
+                        <label for="refRole" class="auth-font my-1">Role</label>
+                        <input type="text" placeholder="Enter your role" id="refRole" readonly
+                            v-model="refSignUpData.role"
+                            class="form-control text-capitalize auth-border input-bg-form-control">
+                    </div>
+
+                    <div class="form-group py-2 m-0">
+                        <label for="refPassword" class="auth-font my-1">Password</label>
+                        <div id="authForm">
+                            <div class="input-group">
+                                <input type="password" class="form-control auth-border py-2 input-bg-form-control"
+                                    id="refPassword" autocomplete="off"
+                                    @input="trimWhiteSpace($event,'refSignUpData','password')"
+                                    v-model="refSignUpData.password" placeholder="Enter your password">
+                                <span class="input-group-append">
+                                    <div class="input-group-text px-3">
+                                        <span style="color: #023047 !important;" class="cursor-pointer font-23"
+                                            @click="toggleVisibility('#refPassword','showVisibilityPassword')">
+                                            <template v-if="!showVisibilityPassword">
+                                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                            </template>
+                                            <template v-if="showVisibilityPassword">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback px-1 d-none"
+                                v-bind:class="{ 'd-block': (isFormSubmitted && !refSignUpData.password),'invalid-fields':!refSignUpData.password }">
+                                You must provide a password.
+                            </div>
+                            <div class="invalid-feedback px-1 d-none"
+                                v-bind:class="{ 'd-block': (isFormSubmitted && refSignUpData.password && !passwordRegex.test(refSignUpData.password)),
+                              'invalid-fields':(refSignUpData.password && !passwordRegex.test(refSignUpData.password)) }">
+                                Your password must include at least 8
+                                characters with one uppercase, one lowercase, one number, one special character.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group py-2 m-0">
+                        <label for="refConfirmPassword" class="auth-font my-1">Confirm password</label>
+                        <div id="authForm">
+                            <div class="input-group">
+                                <input type="password" class="form-control auth-border py-2 input-bg-form-control"
+                                    id="refConfirmPassword" autocomplete="off"
+                                    @input="trimWhiteSpace($event,'refSignUpData','confirm_password')"
+                                    v-model="refSignUpData.confirm_password" placeholder="Enter your confirm password">
+                                <span class="input-group-append">
+                                    <div class="input-group-text px-3">
+                                        <span style="color: #023047 !important;" class="cursor-pointer font-23"
+                                            @click="toggleVisibility('#refConfirmPassword','showVisibilityConfirmPassword')">
+                                            <template v-if="!showVisibilityConfirmPassword">
+                                                <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                                            </template>
+                                            <template v-if="showVisibilityConfirmPassword">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                            </template>
+                                        </span>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="invalid-feedback px-1 d-none"
+                                v-bind:class="{ 'd-block': (isFormSubmitted && !refSignUpData.confirm_password),'invalid-fields':!refSignUpData.confirm_password }">
+                                You must provide a password.
+                            </div>
+                            <div class="invalid-feedback px-1 d-none"
+                                v-bind:class="{ 'd-block': (isFormSubmitted && refSignUpData.confirm_password && !passwordRegex.test(refSignUpData.confirm_password)),
+                              'invalid-fields':(refSignUpData.confirm_password && !passwordRegex.test(refSignUpData.confirm_password)) }">
+                                Your password must include at least 8
+                                characters with one uppercase, one lowercase, one number, one special character.
+                            </div>
+                            <div class="invalid-feedback px-1 d-none"
+                                v-bind:class="{ 'd-block': (isFormSubmitted && refSignUpData.confirm_password && passwordRegex.test(refSignUpData.confirm_password) && (refSignUpData.password != refSignUpData.confirm_password)),'invalid-fields':!refSignUpData.confirm_password }">
+                                Your password and confirm password are not equal.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="pt-4 pt-md-4 pb-2 pb-md-4 text-center mb-0">
+                    <button type="button" @click="noLoginSignUp()"
+                        class="btn px-md-4 py-2 py-md-1 px-1 px-sm-3 col-md-8 col-lg-10 col-xl-10 col-sm-9 col-9">
+                        <span class="btn-quaternary-text">CREATE ACCOUNT
+                        </span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="px-1 px-sm-2 py-2 py-md-4 col-md-10 col-sm-12 col-12 mx-auto">
+            <h2 class="my-2 question-header-font">
+                What next?</h2>
+            <p class="py-2 content-text">
+                We aim to review your referral within 24 hours. If you need further support during this time,
+                please contact the
+                <b class="cursor-pointer"><u>Crisis Care Team on 0151 293 3577 </u></b>
+            </p>
+            <p class="py-2 content-text">Further info & advice can be found at <a class="cursor-pointer"
+                    href="https://www.liverpoolcamhs.com/" target="_blank" rel="noopener noreferrer">
+                    <u><b>Liverpool
+                            CAMHS</b></u> </a></p>
+        </div>
+
+        <!-- SignUp Success Modal Start -->
+        <div class="modal fade" id="signInSuccess" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="signInSuccessLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content modal-bg login-safe-pd">
+
+                    <span aria-hidden="true" class="modal-close" @click="gotoDashboard(tokenVariable)">
+                        <i class="fal fa-times fa-2x cursor-pointer" aria-hidden="true"></i>
+                    </span>
+                    <div class="modal-header justify-content-center model-text-pd">
+                        <p class="text-center m-0 py-2">
+                            <img src="/modules/my-apostrophe-assets/img/4.svg" alt="">
+                        </p>
+                        <h5 class="logout-font mt-3 text-center">ACCOUNT CREATED</h5>
+                        <h6 class="question-font text-center">
+                            Your account has been created
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SignUp Success Modal End -->
+
+        <!-- Change Password Succuss Modal Start -->
+        <div class="modal fade" id="refFeedbackSuccess" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="refFeedbackSuccessLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content modal-bg login-safe-pd">
+                    <span aria-hidden="true" class="modal-close" data-dismiss="modal">
+                        <i class="fal fa-times fa-2x cursor-pointer" aria-hidden="true"></i>
+                    </span>
+                    <div class="modal-header justify-content-center model-text-pd text">
+                        <p class="text-center m-0 py-2">
+                            <img src="/modules/my-apostrophe-assets/img/4.svg" alt="">
+                        </p>
+                        <h5 class="logout-font mt-3 text-center"> {{ feedbackMessage }} </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Change Email Succuss Modal End -->
+
+        <!-- Referral copy sent  Succuss Modal Start -->
+        <div class="modal fade" id="referralSentSuccess" data-backdrop="static" data-keyboard="false" tabindex="-1"
+            role="dialog" aria-labelledby="referralSentSuccessLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content modal-bg login-safe-pd">
+                    <span aria-hidden="true" class="modal-close" @click="closeReferralSentSuccess()">
+                        <i class="fal fa-times fa-2x cursor-pointer" aria-hidden="true"></i>
+                    </span>
+                    <div class="modal-header justify-content-center model-text-pd text">
+                        <p class="text-center m-0 py-2">
+                            <img src="/modules/my-apostrophe-assets/img/4.svg" alt="">
+                        </p>
+                        <h5 id="successMsg" class="logout-font mt-3 text-center">Copy of referral form has been sent to
+                            your email.</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Referral copy sent  Succuss Modal end -->
+
+    </div>
+    {% endraw %}
+    <div v-if="recResList.length>0" class="resource-cont">
+        <div class="col-md-9 col-sm-11 col-11 col-lg-6 col-xl-6 mx-auto">
+            <div class="home-referral-primary mt-2 mt-md-5 mb-0 pt-4">Recommended resources</div>
+            <div style="margin-right: 0px !important; margin-left: 0px !important;" class="bottom-arrow-container row"
+                id="selva">
+                {% for piece in data.recommended |sort(false, true, 'title') %}
+                <a class="pieceCont col-6 col-sm-4 col-md-3" href="{{ piece._url }}">
+                    <div class="insidePieceCont card-container">
+                        <div class="midTextRange">{{ piece.title }}</div>
+                        {% if apos.images.first(piece.thumbnail) %} {% set img =
+                        apos.images.first(piece.thumbnail) %} {% endif %} {% if img %}
+                        <img class="border-radius-10" src="{{ apos.attachments.url(img, { size: 'max' }) }}" />
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

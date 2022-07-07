@@ -1,0 +1,402 @@
+{% extends "layout.html" %}
+{% block extraBody %}
+<script src="/modules/check-referral-module/js/check-referral.js"></script>
+{% endblock %}
+{% block main
+%}
+
+<div id="check-referral" class="main-min-height">
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+    {% raw %}
+    <div id="searchBar" class="top-arrow-container">
+        <div class="input-group home-primary-content-bg">
+            <span class="input-group-prepend">
+                <div class="home-primarySearch-bg input-group-text  border-right-0 height-44">
+                    <span style="color: #023047 !important;">
+                        <i class="fal fa-search font-23"></i>
+                    </span>
+                </div>
+            </span>
+            <input class="height-44 home-primarySearch-bg border-0 form-control py-2" type="text"
+                placeholder="Search your resource" id="example-search-input" v-model="viewReferralObj.searchTxt"
+                @input="getReferalByCode($event)">
+        </div>
+        <div class="dropdown d-flex justify-content-end align-items-center ">
+            <button class=" custom-select-icon auth-font" style="background: none !important;" type="button"
+                id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sort by
+                <i class="fas fa-caret-down"></i> </button>
+            <div class="dropdown-menu no-padding dropdown-custom" style="z-index: 400 !important;"
+                style="z-index: 400 !important;" aria-labelledby="dropdownMenu2">
+                <ul class="list-group border-set-color">
+                    <li class="list-group-item list-set-form text-right">Date</li>
+                    <li class="list-group-item list-set-form text-right">Hospital</li>
+                    <li class="list-group-item list-set-form1  text-right">Treatment</li>
+                </ul>
+            </div>
+        </div>
+        <div>
+            <!-- v-show="getStringLength(viewReferralObj.searchTxt) > 2" -->
+            <div v-show="getStringLength(viewReferralObj.searchTxt) > 0" class="resource_search_text">
+                <b>Search result for "{{viewReferralObj.searchTxt}}"</b>
+                <div v-for="(refObj, index1) in searchReferrals" class="justify-content-between align-items-center"
+                    id="headingTwo">
+                    <div class="align-items-center">
+                        <div class="collapse_title">
+                            <div>
+                                <div class="collapse show collapse-container">
+                                    <div class="collapse-title">
+                                        Date completed
+                                    </div>
+                                    <div class="collapse-para">
+                                        {{changeDateFormat(refObj.updatedAt)}}
+                                    </div>
+                                    <div class="collapse-title">
+                                        Status
+                                    </div>
+                                    <div v-if="refObj.referral_status == 'Nothing' " class="collapse-para">
+                                        {{refObj.referral_status}}
+                                    </div>
+                                    <div v-if="refObj.referral_status != 'Nothing' " class="collapse-para">
+                                        {{refObj.referral_status}}
+                                        <div
+                                            v-if="refObj.referral_status == 'Thank you for your referral. At this time we feel the Community Paediatrics team can support you more appropriately.' ">
+                                            You will need to complete this referral form. <a
+                                                href="https://alderhey.nhs.uk/application/files/8616/0707/4046/ASD_Referral_FORM_-_Alder_Hey_V6_02.11.20.docx"
+                                                download><b>Please click to download</b></a>
+                                        </div>
+                                    </div>
+                                    <div v-show="viewReferralObj.referralType == 'completed'" class="collapse-title">
+                                        Code
+                                    </div>
+                                    <div v-show="viewReferralObj.referralType == 'completed'" class="collapse-para">
+                                        {{refObj.reference_code}}
+                                    </div>
+
+                                    <div v-show="viewReferralObj.userRole != 'professional' && refObj.appointment_status">
+                                        <div class="collapse-title">
+                                            Appointment details
+                                        </div>
+                                        <div  class="collapse-para">
+                                            {{refObj.appointment_status}}
+                                        </div>
+                                    </div>
+
+
+                                    <!-- <div v-show="viewReferralObj.referralType == 'completed'" class="collapse-title">
+                                        Appointment details
+                                    </div>
+                                    <div v-show="viewReferralObj.referralType == 'completed'" class="collapse-para">
+                                        {{refObj.reference_code}}
+                                    </div> -->
+
+                                    <div v-show="viewReferralObj.referralType == 'incomplete'"
+                                        class="container pr-0 float-btn-cont">
+                                        <button class="float-btn" type="button" @click="contineReferral(refObj)">
+                                            <i class="fas fa-plus plus-fa-fa" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-show="getStringLength(viewReferralObj.searchTxt) > 0 && searchReferrals.length == 0"
+            class="primary-search-radius home-primary-content-bg cursor-pointer">
+            <p class="resource_search_text p-3 d-flex justify-content-center">No results found</p>
+        </div>
+        <div v-if="getStringLength(viewReferralObj.searchTxt) < 1 && viewReferralObj.loginUserFlag=='true'"
+            class='d-flex progress-container'>
+            <div @click="fetchReferrals('completed')"
+                class=" col-6 card-bg-set themeText text-center text-complete cursor-pointer"
+                v-bind:class="{'text-complete-active':!activeState}">
+                <p class="m-0">
+                    Completed
+                </p>
+            </div>
+            <div @click="fetchReferrals('incomplete')"
+                class="col-6 card-bg-set text-center themeText text-not-complete cursor-pointer"
+                v-bind:class="{'text-complete-active':activeState}">
+                <p class="m-0">
+                    Not completed
+                </p>
+            </div>
+        </div>
+        <div class="text_blog" v-show="viewReferralObj.loginUserFlag=='true'">
+            <p class="recent_referrals m-0">
+                Recent referrals
+            </p>
+            <div v-if="viewReferralArray.length" class="recent_content">
+                <p class="recent_content m-0">
+                    A list of your most recent referrals
+                </p>
+            </div>
+            <hr class="dropdown-divider" />
+            <p v-if="viewReferralArray.length == 0" class="m-0 recent_referrals">No referrals found</p>
+            <div v-for="(referrals, index) in viewReferralArray.slice(0, 1)"
+                class="justify-content-between align-items-center" id="headingOne">
+                <div class="d-flex pt-2 pb-2 w-100">
+                    <div class="flexGrow themeText">
+                        <p class="m-0">
+                            {{referrals.date}}
+                        </p>
+
+                    </div>
+                    <div>
+                        <span style="color: #D6D8D8;">
+                            <i class="fas fa-chevron-circle-down fa-2x res_fontz arrowClass cursor-pointer w-35"
+                                data-toggle="collapse" :href="'#recentCollapseExample1'+ viewReferralObj.referralType"
+                                @click="toggleArrow($event)" role="button" aria-expanded="false"
+                                aria-controls="collapseExample"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- <span style="color: #D6D8D8;">
+                    <i class="fas fa-chevron-circle-up fa-2x res_fontz arrowClass cursor-pointer"
+                        data-toggle="collapse" id="toggle3" data-target="#collapseThree"
+                        @click="toggleArrow($event,3,allSectionData)" aria-expanded="true"
+                        aria-controls="collapseThree"></i>
+                </span> -->
+                <div class="collapse show collapse-container"
+                    :id="'recentCollapseExample1'+ viewReferralObj.referralType">
+                    <div v-for="(refObj, index1) in referrals.data" class="justify-content-between align-items-center"
+                        id="headingTwo">
+                        <div class="align-items-center">
+                            <div class="collapse_title">
+                                <div>
+                                    <div>
+                                        <div v-if="viewReferralObj.referralType == 'completed'">
+                                            <p class="collapse-title m-0">
+                                                Date completed
+                                            </p>
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'incomplete'">
+                                            <p class="collapse-title m-0">
+                                                Date
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="collapse-para m-0">
+                                                {{changeDateFormat(refObj.updatedAt)}}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="collapse-title m-0">
+                                                Status
+                                            </p>
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'completed' && refObj.referral_status == 'Pending' "
+                                            class="collapse-para">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.referral_status}}
+                                            </p>
+                                            {{refObj.referral_status}}
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'completed' && refObj.referral_status != 'Pending' "
+                                            class="collapse-para">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.referral_status}}
+                                            </p>
+                                            <div
+                                                v-if="refObj.referral_status == 'Thank you for your referral. At this time we feel the Community Paediatrics team can support you more appropriately.'">
+                                                <p class="m-0">
+                                                    You will need to complete this referral form.
+                                                </p> <a
+                                                    href="https://alderhey.nhs.uk/application/files/8616/0707/4046/ASD_Referral_FORM_-_Alder_Hey_V6_02.11.20.docx"
+                                                    download><b>
+                                                        <p class="m-0">
+                                                            Please click to download
+                                                        </p>
+                                                    </b></a>
+                                            </div>
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'incomplete'" class="collapse-para">
+                                            <p class="collapse-para m-0">
+                                                Not completed
+                                            </p>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'completed'"
+                                            class="collapse-title">
+                                            <p class="collapse-title m-0">
+                                                Code
+                                            </p>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'completed'" class="collapse-para">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.reference_code}}
+                                            </p>
+                                        </div>
+
+                                        <div v-show="viewReferralObj.userRole != 'professional' && refObj.appointment_status">
+                                            <div class="collapse-title">
+                                                Appointment details
+                                            </div>
+                                            <div  class="collapse-para">
+                                                {{refObj.appointment_status}}
+                                            </div>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'incomplete'"
+                                            class="container pr-0 float-btn-cont">
+                                            <button class="float-btn" type="button" @click="contineReferral(refObj)">
+                                                <i class="fas fa-plus plus-fa-fa" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="text_blog" v-show="viewReferralObj.loginUserFlag=='true'">
+            <div class="recent_referrals">
+                <p class="m-0">
+                    Past referrals
+                </p>
+            </div>
+            <div v-if="viewReferralArray.length > 1" class="recent_content">
+                <p class="m-0">
+                    A list of your past referrals
+                </p>
+            </div>
+            <hr class="dropdown-divider" />
+            <p v-if="viewReferralArray.length <= 1" class="m-0 recent_referrals">No referrals found</p>
+            <div v-for="(referrals, index) in viewReferralArray" v-if="index > 0"
+                class="justify-content-between align-items-center" id="headingOne">
+                <!-- {{referrals.date}}
+                <span style="color: #D6D8D8;">
+                    <i class="fas fa-chevron-circle-down fa-2x res_fontz" data-toggle="collapse"
+                        :href="'#collapseExample' + index" role="button" aria-expanded="false"
+                        aria-controls="collapseExample"></i>
+                </span> -->
+
+                <div class="d-flex pt-2 pb-2 w-100">
+                    <div class="flexGrow themeText">
+                        <p class="m-0">
+                            {{referrals.date}}</p>
+                    </div>
+                    <div>
+                        <span style="color: #D6D8D8;">
+                            <i class="fas fa-chevron-circle-down fa-2x res_fontz arrowClass cursor-pointer w-35"
+                                data-toggle="collapse" :href="'#collapseExample' + index + viewReferralObj.referralType"
+                                id="'collapseExample' + index" @click="toggleArrow($event)" role="button"
+                                aria-expanded="false" aria-controls="collapseExample"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="collapse show collapse-container"
+                    :id="'collapseExample' + index + viewReferralObj.referralType">
+                    <div v-for="(refObj, index1) in referrals.data" class=" justify-content-between align-items-center"
+                        id="headingTwo">
+                        <div class=" align-items-center">
+                            <div class="collapse_title">
+                                <div>
+                                    <div>
+                                        <div v-if="viewReferralObj.referralType == 'completed'">
+                                            <p class="collapse-title m-0">
+                                                Date completed
+                                            </p>
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'incomplete'">
+                                            <p class="collapse-title m-0">
+                                                Date</p>
+                                        </div>
+                                        <div class="collapse-para">
+                                            <p class="collapse-para m-0">
+                                                {{changeDateFormat(refObj.updatedAt)}}</p>
+                                        </div>
+                                        <div>
+                                            <p class="collapse-title m-0">
+                                                Status</p>
+                                        </div>
+                                        <div
+                                            v-if="viewReferralObj.referralType == 'completed' && refObj.referral_status == 'Nothing' ">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.referral_status}}
+
+                                            </p>
+                                        </div>
+                                        <div
+                                            v-if="viewReferralObj.referralType == 'completed' && refObj.referral_status != 'Nothing' ">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.referral_status}}
+
+                                            </p>
+                                            <div
+                                                v-if="refObj.referral_status == 'Thank you for your referral. At this time we feel the Community Paediatrics team can support you more appropriately.' ">
+                                                <p class="m-0">You will need to complete this referral form.</p> <a
+                                                    href="https://alderhey.nhs.uk/application/files/8616/0707/4046/ASD_Referral_FORM_-_Alder_Hey_V6_02.11.20.docx"
+                                                    download><b>
+                                                        <p class="m-0">Please click to download</p>
+                                                    </b></a>
+                                            </div>
+                                        </div>
+                                        <div v-if="viewReferralObj.referralType == 'incomplete'">
+                                            <p class="collapse-para m-0">
+                                                Not completed
+                                            </p>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'completed'">
+                                            <p class="collapse-title m-0">
+                                                Code
+                                            </p>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'completed'">
+                                            <p class="collapse-para m-0">
+                                                {{refObj.reference_code}}
+                                            </p>
+                                        </div>
+                                        <div v-show="viewReferralObj.userRole != 'professional' && refObj.appointment_status">
+                                            <div class="collapse-title">
+                                                Appointment details
+                                            </div>
+                                            <div  class="collapse-para">
+                                                {{refObj.appointment_status}}
+                                            </div>
+                                        </div>
+                                        <div v-show="viewReferralObj.referralType == 'incomplete'"
+                                            class="container pr-0 float-btn-cont">
+                                            <button class="float-btn" type="button" @click="contineReferral(refObj)">
+                                                <i class="fas fa-plus plus-fa-fa" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endraw %}
+    </div>
+
+    {% endblock %}

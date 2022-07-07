@@ -1,0 +1,173 @@
+{% extends "layout.html" %} {% block extraBody %}
+<script src="/modules/mental-health-module/js/mentalHealth.js"></script>
+<script src="/modules/shared-referal-module/js/searchReferral.js"></script>
+<script src="/modules/liverpool-mental-health-pages/js/voiceover.js"></script>
+{% endblock %} {% block main %}
+
+<div id="mentalHealthPage">
+  <!-- Loader start -->
+  <div class="overlay" id="loader">
+    <div class="overlay__inner">
+      <div class="overlay__content">
+        <div class="lds-spinner">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Loader end -->
+
+  <div class="d-flex text-left mt-xl-4 mt-lg-4 mt-md-4 mt-3 my-md-0">
+    <div class="col-md-8 col-lg-6 col-xl-6 col-11 mx-auto p-0">
+      <!-- <a href="{{ data.logoPath }}" class="text-decoration-none">
+                <img src="/modules/my-apostrophe-assets/img/Back.svg" data-toggle="tooltip" data-placement="top"
+                    title="Back" class="cursor-pointer py-1" alt="">
+            </a> -->
+
+      <!-- <div class="col-12 px-0 mb-sm-3"> -->
+      <a href="{{ data.logoPath }}" class="previous-link"><i class="fal fa-long-arrow-left fa-2x ham-icon "></i>
+        <span class="hide-formlabel">back arrow</span>
+      </a>
+
+      <h2 class="home-header-primary m-0 pt-2 pb-0">About mental health services</h2>
+      <!-- </div> -->
+    </div>
+  </div>
+
+  <div class="">
+    <div class="d-flex text-center py-2 my-2 py-md-3 my-md-2">
+      <div class="col-md-8 col-lg-6 col-xl-6 col-11 p-0 mx-auto" id="searchBar">
+        <label class="hide-formlabel" for="resources">.</label>
+        <input hidden id="resources" value="{{data.piecesArray|dump}}" />
+        <div>
+          <div class="input-group home-primary-content-bg">
+            <span class="input-group-prepend">
+              <div class="home-primarySearch-bg input-group-text border-right-0 height-44">
+                <span style="color: #023047 !important">
+                  <i class="fal fa-search font-23"></i>
+                </span>
+              </div>
+            </span>
+            <label class="hide-formlabel" for="example-search-input">Filter Pieces</label>
+            <input class="height-44 home-primarySearch-bg border-0 form-control py-2" type="text" v-model="searchQuery"
+              placeholder="Search your service" id="example-search-input" @input="filterPieces()" />
+            <!-- <div class="search-wrapper">
+
+              <form class="wid-80">
+              <input type="text" name="focus" required class="search-box height-44 home-primarySearch-bg border-0 form-control py-2" v-model="searchQuery"
+              placeholder="Search your services"
+              id="example-search-input"
+              @input="filterPieces()"  />
+              <button class="close-icon" type="reset"></button>
+              </form>
+              </div> -->
+          </div>
+          <div id="hideserachblock" class="d-none">
+            {% raw %}
+            <!-- Search functionality start-->
+            <div v-if="showSearchResults" class="resource_search_text my-3">
+              Search results for “what is {{searchQuery}}?”
+            </div>
+            <div v-if="showSearchResults" class="search-wrap primary-search-radius">
+              <div class="primary-search-radius card cursor-pointer card-set-container-bg">
+                <div v-if="filteredData.length">
+                  <div v-for="item in filteredData" class="border-bottom-primary card-body px-2 py-3">
+                    <a :href=" item.custom_url ? item.custom_url : item._url">
+                      <div class="d-flex align-items-center">
+                        <p class="question-font my-0 mx-2 mx-md-4 text-left ellipse-text-dropdown">
+                          {{item.title}}
+                        </p>
+                        <ul class="my-0 link-text mx-2 fixedWidthSetLI" style="list-style: inside !important">
+                          <li>{{item.Topic}}</li>
+                        </ul>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                <div v-if="!filteredData.length">
+                  <p class="home-header-secondary py-3 pl-4">No results found</p>
+                </div>
+              </div>
+            </div>
+            <!-- Search functionality end-->
+            {% endraw %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex text-center py-2">
+      <div class="col-md-8 col-lg-6 col-xl-6 col-11 py-2 py-md-4 mx-auto home-primary-content-bg">
+        <div class="d-flex w-100 align-items-center ">
+          <p id="dynamicVoiceOverContent" class="d-none">aboutMHealthContent</p>
+          <div class="replaceClass col-6 col-lg-9 p-0"></div>
+          <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty"
+            id="c730ed34-ce14-4df1-8718-6346cd050c2b">
+            <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 border-0" id="playButton"
+              role="button">Play</button>
+            <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="pauseButton"
+              role="button">Pause</button>
+            <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="resumeButton"
+              role="button">Resume</button>
+
+            <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0" disabled
+              id="stopButton" role="button">Stop</button>
+          </div>
+
+          <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty" id="androidContainer">
+            <button class="btn btn-primary play-button mr-2 px-2 px-sm-3" id="playAndroidButton"
+              role="button">Play</button>
+            <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0" disabled
+              id="stopAndroidButton" role="button">Stop</button>
+          </div>
+        </div>
+        <h3 class="home-primary-content m-0 py-3 px-2 text-left" id="aboutMHealthContent">
+          Here you can find information about the types of people you can meet
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex py-0 mt-md-2 pb-1 mt-2">
+    <div class="col-md-8 col-lg-6 col-11 col-xl-6 px-0 py-2 py-md-0 mx-auto cursor-pointer">
+      <div class="d-flex justify-content-center">
+        <a class="col-md-12 p-0 home-primary-content-bg" href="/mental-health/people">
+          <div class="text-center py-4">
+            <img src="/modules/my-apostrophe-assets/img/people.svg" class="px-3 image-height" alt="" />
+          </div>
+          <div class="text-center text-md-right py-1 sub-header-bg home-card-radius">
+            <span class="home-secondary-content px-1 px-md-3">About the people</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex py-0 mt-md-3 pb-1 mt-2">
+    <div class="col-md-8 col-lg-6 col-11 col-xl-6 px-0 py-2 mx-auto cursor-pointer">
+      <div class="d-flex justify-content-center">
+        <a class="col-md-12 p-0 home-primary-content-bg" href="/mental-health/services">
+          <div class="text-center py-4">
+            <img src="/modules/my-apostrophe-assets/img/services.svg" class="px-3 image-height" alt="" />
+          </div>
+          <div class="text-center text-md-right py-1 sub-header-bg home-card-radius">
+            <span class="home-secondary-content px-1 px-md-3">About the services</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% include "../../shared-referal-module/views/searchReferral.html" %} {%
+  include "../../shared-referal-module/views/company.html" %}
+</div>
+{% endblock %}

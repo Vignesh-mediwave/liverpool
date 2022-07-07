@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+
+{% block extraBody %}
+<script src="/modules/feedback-module/js/feedback.js"></script>
+<script src="/modules/shared-referal-module/js/searchReferral.js"></script>
+{% endblock %}
+
+{% block main %}
+
+<div id="feedbackPage">
+
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+    <div class="d-flex text-left mt-xl-4 mt-lg-4 mt-md-4 mt-4 mb-0">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 px-0 mx-auto">
+            <a href="{{ data.logoPath }}">
+                <!-- <img src="/modules/my-apostrophe-assets/img/Back.svg" data-toggle="tooltip" data-placement="top"
+                    title="Back" class="cursor-pointer py-1" alt=""> -->
+                <i class="fal fa-long-arrow-left fa-2x ham-icon"></i>
+                <span style="display: none;">back button</span>
+            </a>
+
+            <div class="home-header-primary m-0 pt-1 pt-md-2 pb-1">
+                {{
+                apos.area(data.page, 'feedbackTitle', {
+                widgets: {
+                'apostrophe-rich-text': {
+                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                styles: [
+                { name: 'Heading', element: 'h2' },
+                { name: 'Paragraph', element: 'p' }
+                ]
+                }
+                }
+                })
+                }}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex text-center py-md-3 py-2">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 py-2 py-md-4 mx-auto home-primary-content-bg">
+            <div class="home-primary-content m-0 py-2 px-2 text-left">
+                {{
+                apos.area(data.page, 'feedbackText', {
+                widgets: {
+                'apostrophe-rich-text': {
+                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                styles: [
+                { name: 'Heading', element: 'h3' },
+                { name: 'Paragraph', element: 'p' }
+                ]
+                }
+                }
+                })
+                }}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex text-center py-md-3 py-2">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 py-2 py-md-4 mx-auto home-primary-content-bg">
+            <div class="home-primary-content m-0 py-2 px-2 text-left">
+                <!-- How satisfied are you with the platform? -->
+                {{
+                apos.area(data.page, 'feedbackSecondText', {
+                widgets: {
+                'apostrophe-rich-text': {
+                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                styles: [
+                { name: 'Heading', element: 'h3' },
+                { name: 'Paragraph', element: 'p' }
+                ]
+                }
+                }
+                })
+                }}
+            </div>
+            <fieldset id="feedBackStars" class="rating float-left">
+                
+               
+                <input v-model="feedbackData.ratings" type="radio" id="5star" name="rating" value="5"/>
+                <label class="full m-0" for="5star"></label>
+            
+
+
+                <input type="radio" v-model="feedbackData.ratings" id="4halfstar" name="rating" value="4.5" />
+                <label  class="half" for="4halfstar"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="4star" name="rating" value="4" />
+                <label  class="full m-0" for="4star"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="3halfstar" name="rating" value="3.5" />
+                <label   class="half" for="3halfstar"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="3star" name="rating" value="3" />
+                <label   class="full m-0" for="3star"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="2halfstar" name="rating" value="2.5" />
+                <label  class="half" for="2halfstar"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="2star" name="rating" value="2" />
+                <label   class="full m-0" for="2star"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="1halfstar" name="rating" value="1.5" />
+                <label   class="half" for="1halfstar"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="1star" name="rating" value="1" />
+                <label   class="full m-0" for="1star"></label>
+
+                <input type="radio" v-model="feedbackData.ratings" id="halfstar" name="rating" value="0.5" />
+                <label  class="half" for="halfstar"></label>
+            </fieldset>
+
+            <div class="invalid-feedback d-none float-left text-left px-2 py-1"
+                v-bind:class="{ 'd-block':(isFormSubmitted && !feedbackData.ratings),'invalid-fields':!feedbackData.ratings }">
+                You must provide rating.
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex text-center py-md-3 py-2">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 py-2 py-md-4 mx-auto home-primary-content-bg">
+            <div class="form-group text-left px-1 px-md-3">
+                <label for="feedback" class="home-primary-content m-0 py-3 py-md-2">Feel free to leave
+                    more
+                    feedback below</label>
+                <textarea class="h-300 p-4 form-control my-1 my-md-3 input-bg-form-control" id="feedback" v-model="feedbackData.comments"
+                    @input="preventWhiteSpace($event)" placeholder="You can submit your feedback here"
+                    rows="4"></textarea>
+                <!-- placeholder="I would recommend this highly to a friend" -->
+                <div class="invalid-feedback d-none float-left text-left px-2 py-1"
+                    v-bind:class="{ 'd-block':(isFormSubmitted && !feedbackData.comments),'invalid-fields':!feedbackData.comments }">
+                    You must provide comment.
+                </div>
+            </div>
+            <div class="py-4 text-center">
+                <button type="button" @click="sendFeedback()" id="secondary" class="btn px-md-4 py-1 px-3 mx-auto w-h-sub ">
+                    <span class="btn-quaternary-text">
+                        SUBMIT
+                        <!-- {{ apos.area(data.page, 'feedbackButton', {
+                            widgets: {
+                              'apostrophe-rich-text': {
+                                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                                styles: [
+                                  { name: 'Heading', element: 'h3' },
+                                  { name: 'Paragraph', element: 'p' }
+                                ]
+                              }
+                            }
+                          }) }} -->
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% include "../../shared-referal-module/views/searchReferral.html" %}
+    {% include "../../shared-referal-module/views/company.html" %}
+
+    {% raw %}
+
+    <!-- Change Password Succuss Modal Start -->
+    <div class="modal fade" id="feedbackSuccess" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        role="dialog" aria-labelledby="feedbackSuccessLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content modal-bg login-safe-pd">
+                <span aria-hidden="true" class="modal-close" @click="closeMsg()">
+                    <i class="fal fa-times fa-2x cursor-pointer" aria-hidden="true"></i>
+                </span>
+                <div class="modal-header justify-content-center model-text-pd text">
+                    <p class="text-center m-0 py-2">
+                        <img src="/modules/my-apostrophe-assets/img/4.svg" alt="">
+                    </p>
+                    <h5 class="logout-font mt-3 text-center"> {{ feedbackMessage }} </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endraw %}
+    <!-- Change Email Succuss Modal End -->
+
+</div>
+{% endblock %}

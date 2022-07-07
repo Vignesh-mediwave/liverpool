@@ -1,0 +1,413 @@
+{% extends "layout.html" %}
+{% block extraBody %}
+<script src="/modules/orcha-module/js/orcha.js"></script>
+<script src="/modules/shared-referal-module/js/searchReferral.js"></script>
+<script src="/modules/liverpool-mental-health-pages/js/voiceover.js"></script>
+
+{% endblock %}
+{% block main%}
+
+<div id="orchaDetailPage">
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+    <div v-cloak class="top-arrow-container pd-container" id="searchBar">
+        <div class="col-12 px-0 mb-sm-3"><a href="{{data.bckBtn}}" class="previous-link"><i
+                    class="fal fa-long-arrow-left fa-2x ham-icon "></i></a>
+            {% raw %}
+            <div v-if="showAppContent" class="resource_text pb-sm-0 pt-0"> {{ appObj.smallAppCardInfo.appName }}</div>
+            {% endraw %}
+        </div>
+        {% if data.bckBtn != '/apps?b3JjaGFCYWNr'%}
+        <input hidden id="resources" value="{{data.searchApps|dump}}">
+        {% raw %}
+        <div v-if="showSearchBar" class="input-group home-primary-content-bg">
+            <span class="input-group-prepend">
+                <div class="home-primarySearch-bg input-group-text  border-right-0 height-44">
+                    <span style="color: #023047 !important;">
+                        <i class="fal fa-search font-23"></i>
+                    </span>
+                </div>
+            </span>
+            <input class="height-44 home-primarySearch-bg border-0 form-control py-2" type="text" v-model="searchQuery"
+                placeholder="Search your app" id="example-search-input" @input="filterApps()">
+            <!-- <div class="search-wrapper">
+
+              <form class="wid-80">
+              <input type="text" name="focus" required class="search-box height-44 home-primarySearch-bg border-0 form-control py-2" v-model="searchQuery"
+              placeholder="Search your app"
+              id="example-search-input"
+              @input="filterApps()"  />
+              <button class="close-icon" type="reset"></button>
+              </form>
+              </div> -->
+        </div>
+        {% endraw %}
+        {% endif %}
+        <div id="hideserachblock" class="d-none">
+            {% raw %}
+            <!-- Search functionality start-->
+            <div v-if="showSearchResults" class="resource_search_text my-3">Search results for “what is
+                {{searchQuery}}?”</div>
+            <div v-if="showSearchResults" class="search-wrap primary-search-radius">
+                <div class="primary-search-radius home-primary-content-bg cursor-pointer">
+                    <div v-if="filteredData.length">
+                        <div v-for="item in filteredData" class="border-bottom-primary card-body px-2 py-3">
+                            <a :href=" item.custom_url ? item.custom_url : item._url ">
+                                <div class="d-flex align-items-center">
+                                    <p class="question-font my-0 mx-2 mx-md-4 text-left ellipse-text-dropdown">
+                                        {{item.title}}
+                                    </p>
+                                    <ul class="my-0 link-text mx-2 fixedWidthSetLI"
+                                        style="list-style: inside !important;">
+                                        <li>{{item.platform}}</li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div v-if="!filteredData.length">
+                        <p class="home-header-secondary py-3 pl-4">No results found</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search functionality end-->
+            {% endraw %}
+        </div>
+
+        <div class="text_inside_cont card-set-container-bg home-primary-content-bg">
+            <div class="d-flex w-100 align-items-center ">
+                <p id="dynamicVoiceOverContent" class="d-none">AppsVoiceOverContent1</p>
+                <div class="replaceClass col-6 col-lg-9 p-0"></div>
+                <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty"
+                    id="c730ed34-ce14-4df1-8718-6346cd050c2b">
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 border-0" id="playButton"
+                        role="button">Play</button>
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="pauseButton"
+                        role="button">Pause</button>
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="resumeButton"
+                        role="button">Resume</button>
+
+                    <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                        disabled id="stopButton" role="button">Stop</button>
+                </div>
+
+                <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty" id="androidContainer">
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3" id="playAndroidButton"
+                        role="button">Play</button>
+                    <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                        disabled id="stopAndroidButton" role="button">Stop</button>
+                </div>
+            </div>
+            <h5 class="logout-font font-weight-bold m-0 pt-2" id="AppsVoiceOverContent1">
+                On this page, you can access a range of useful websites and apps
+            </h5>
+        </div>
+        {% raw %}
+        <div v-if="showAppContent">
+            <div class="percentage-container d-flex justify-content-center align-items-center">
+                {{ appObj.smallAppCardInfo.score }}%
+            </div>
+            <div class="text_inside_play-store-orcha">
+
+
+                <div class='d-flex'>
+                    <div class="">
+                        <img class="border-radius-10" width="140" :src="appObj.smallAppCardInfo.thumbnail"
+                            style="box-shadow: 0px 3px 6px #00000029 !important;" @error="handleError($event)">
+                    </div>
+                    <div class="title-cont-top">
+                        <div class="hearder-cont-h1">
+                            {{ appObj.smallAppCardInfo.appName }}
+                        </div>
+                        <div class="d-flex">
+                            <div class="para-cont-p font-weight-lighter pr-2">
+                                PublisherName :
+                            </div>
+                            <div class="para-cont-p ">
+                                {{ appObj.smallAppCardInfo.publisherName }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="py-2 ">
+                    <div class="hearder-cont-h1 ">
+                        Description
+                    </div>
+                </div>
+                {{ appObj.smallAppCardInfo.description }}
+                <!-- <div>
+                    <a class="seemore">See more...</a>
+                </div> -->
+                <hr class="dropdown-divider my-3" />
+
+                <div class="justify-content-between align-items-center" id="headingAppDetails">
+                    <div class="d-flex pt-2 pb-2 w-100">
+                        <div class="flexGrow">
+                            <div class="hearder-cont-h1">
+                                App details
+                            </div>
+                        </div>
+                        <div>
+                            <span style="color: #D6D8D8;">
+                                <i class="fas fa-chevron-circle-up fa-2x res_fontz arrowClass cursor-pointer w-35"
+                                    data-toggle="collapse" data-target="#collapseAppDetails"
+                                    @click="toggleArrow($event)" role="button" aria-expanded="true"
+                                    aria-controls="collapseAppDetails"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="collapseAppDetails" class="collapse" aria-labelledby="headingAppDetails">
+                        <div class="justify-content-between align-items-center">
+                            <div class="d-flex my-2">
+                                <div class="titleQuestion" style="word-break: normal;">
+                                    Category:
+                                </div>
+                                <div class="seemore">
+                                    {{ appObj.categoryName }}
+                                </div>
+                            </div>
+                            <div class="d-flex my-2">
+                                <div class="titleQuestion">
+                                    Reviewed on:
+                                </div>
+                                <div class="seemore">
+                                    {{ appObj.review_date }}
+                                </div>
+                            </div>
+                            <div class="d-flex my-2">
+                                <div class="titleQuestion">
+                                    Released:
+                                </div>
+                                <div class="seemore">
+                                    {{ appObj.release_date }}
+                                </div>
+                            </div>
+                            <div class="d-flex my-2">
+                                <div class="titleQuestion">
+                                    Version:
+                                </div>
+                                <div class="seemore">
+                                    {{ appObj.smallAppCardInfo.version}}
+                                </div>
+                            </div>
+                            <div class="d-flex my-2">
+                                <div class="titleQuestion">
+                                    Size:
+                                </div>
+                                <div class="seemore">
+                                    {{ appObj.file_size }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="dropdown-divider my-3" />
+                <div class="justify-content-between align-items-center" id="headingSummary">
+                    <div class="d-flex pt-2 pb-2 w-100">
+                        <div class="flexGrow">
+                            <div class="hearder-cont-h1">
+                                Summary
+                            </div>
+                        </div>
+                        <div>
+                            <span style="color: #D6D8D8;">
+                                <i class="fas fa-chevron-circle-up fa-2x res_fontz arrowClass cursor-pointer w-35"
+                                    data-toggle="collapse" data-target="#collapseSummary" @click="toggleArrow($event)"
+                                    role="button" aria-expanded="true" aria-controls="collapseSummary"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="collapseSummary" class="collapse" aria-labelledby="headingSummary">
+                        <div class="justify-content-between align-items-center">
+                            <div class="d-flex my-2">
+                                <div class="seemore flexGrow">
+                                    Data Privacy:
+                                </div>
+                                <div class="titleQuestion">
+                                    {{ appObj.data_privacy_score }}%
+                                </div>
+                            </div>
+                            <div class="progress-radius progressOrcha my-3">
+                                <div class="progress-bg progress-bar" role="progressbar"
+                                    :style="{ width: appObj.data_privacy_score + '%' }" aria-valuenow="75"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                    <span class="link-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-2">
+                                <div class="seemore flexGrow">
+                                    Clinical Assurance:
+                                </div>
+                                <div class="titleQuestion">
+                                    {{ appObj.clinical_assurance_score }}%
+                                </div>
+                            </div>
+                            <div class="progress-radius progressOrcha my-3">
+                                <div class="progress-bg progress-bar" role="progressbar"
+                                    :style="{ width: appObj.clinical_assurance_score + '%' }" aria-valuenow="75"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                    <span class="link-text"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex my-2">
+                                <div class="seemore flexGrow">
+                                    User Experience:
+                                </div>
+                                <div class="titleQuestion">
+                                    {{ appObj.user_experience_score }}%
+                                </div>
+                            </div>
+                            <div class="progress-radius progressOrcha my-3">
+                                <div class="progress-bg progress-bar" role="progressbar"
+                                    :style="{ width: appObj.user_experience_score + '%' }" aria-valuenow="75"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                    <span class="link-text"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="dropdown-divider my-3" />
+                <div class="justify-content-between align-items-center" id="headingGallery">
+                    <div class="d-flex pt-2 pb-2 w-100">
+                        <div class="flexGrow">
+                            <div class="hearder-cont-h1">
+                                Gallery
+                            </div>
+                        </div>
+                        <div>
+                            <span style="color: #D6D8D8;">
+                                <i class="fas fa-chevron-circle-up fa-2x res_fontz arrowClass cursor-pointer w-35"
+                                    data-toggle="collapse" data-target="#collapseGallery" @click="toggleArrow($event)"
+                                    role="button" aria-expanded="true" aria-controls="collapseGallery"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div id="collapseGallery" class="collapse" aria-labelledby="headingGallery">
+                        <p v-if="appObj.screenshots.length == 0">No image found</p>
+                        <div v-if="appObj.screenshots.length != 0" class=" py-md-2 py-0">
+                            <!-- <div class=" mx-auto w-100 d-flex overflow-auto" id='style-scroll'>
+                                <a v-for="screenshot in appObj.screenshots"
+                                    class="swiper-slide custom-slider-orcha text-decoration-none bg-no border-radius-10 swiper-slide-duplicate mb-3 swiper-slide-duplicate-active"
+                                    data-swiper-slide-index="0" role="group" aria-label="1 / 6">
+                                    <div class="questionText">
+                                        <img class="img-placeholder m-b-min-8" style="width: 100%" :src="screenshot">
+                                    </div>
+                                </a>
+                            </div> -->
+                            <div class="swiper-container set-space-padding top-slider-cont-max">
+                                <div class="swiper-wrapper mb-4" id="swiper-wrapper-0010109b9815fb10cbf"
+                                    aria-live="polite">
+                                    <a v-for="screenshot in appObj.screenshots"
+                                        class="swiper-slide bg-no border-radius-10 swiper-slide-next swiper-slide-duplicate-prev text-decoration-none"
+                                        data-swiper-slide-index="1" role="group"
+                                        style="width: 246.667px; margin-right: 30px">
+                                        <div class="questionText">
+                                            <img class="img-placeholder m-b-min-8" style="width: 100%"
+                                                :src="screenshot">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="swiper-button-next custom-control-next" tabindex="0" role="button"
+                                    aria-label="Next slide" aria-controls="swiper-wrapper-81093574348bf1075e"></div>
+                                <div class="swiper-button-prev custom-control-prev" tabindex="0" role="button"
+                                    aria-label="Previous slide" aria-controls="swiper-wrapper-81093574348bf1075e"></div>
+                                <!-- <div class="swiper-scrollbar"></div> -->
+                                <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="dropdown-divider my-3" />
+
+                <div class="py-4 text-left d-flex justify-content-center">
+                    <a :href="appObj.smallAppCardInfo.downloadLink" target="_blank">
+                        <button type="button" class="btn-download px-md-4 py-1 px-3 mx-auto w-100 border-0">
+                            <span class="btn-quaternary-text">DOWNLOAD</span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% endraw %}
+
+        {% if data.bckBtn != '/apps?b3JjaGFCYWNr'%}
+
+        {% if data .orchaApps and data.orchaApps.length > 1 %}
+        <div class="selectSource">
+            More apps to download
+        </div>
+        {% endif %}
+
+        {% if data .orchaApps and data.orchaApps.length > 1 %}
+        <div class="large-toggle-cont">
+            <div class="row mr-0 ml-0 w-100">
+                {% for orchaApps in data.orchaApps %}
+                {% if orchaApps.id != data.currentApp %}
+                <div class="col-4 col-md-2 padding-set-equal">
+                    <a class="text-decoration-none" href="/apps/details?app_id={{orchaApps.id}}">
+                        <div class="img-cont-app position-relative">
+                            <img class="panda-img" @error="handleError($event)" src="{{orchaApps.thumbnail}}" />
+                            {% if orchaApps.platform == 'Android' %}
+                            <img src="/modules/my-apostrophe-assets/img/android.svg" width="60" height="40"
+                                class="cursor-pointer img-pos" alt="">
+                            {% endif %}
+                            {% if orchaApps.platform == 'iOS' %}
+                            <img src="/modules/my-apostrophe-assets/img/ios.svg" width="60" height="40"
+                                class="cursor-pointer img-pos" alt="">
+                            {% endif %}
+                            {% if orchaApps.platform == 'Web App' %}
+                            <img src="/modules/my-apostrophe-assets/img/web.svg" width="60" height="40"
+                                class="px-1 px-md-2 cursor-pointer img-pos" alt="" />
+                            {% endif %}
+                        </div>
+                        <div class="text-cont-app text-container-wrap py-2">
+                            {{orchaApps.appName}}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if data .orchaApps and data.orchaApps.length == 1 %}
+        <div class="large-toggle-cont">
+            <div class="row mr-0 ml-0 w-100 text-center py-3">
+                No apps found
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+    </div>
+    {% include "../../shared-referal-module/views/searchReferral.html" %}
+</div>
+{% endblock %}

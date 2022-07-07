@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+{% block extraBody %}
+<script src="/modules/footer-pages-module/js/terms.js"></script>
+<script src="/modules/shared-referal-module/js/searchReferral.js"></script>
+<script src="/modules/liverpool-mental-health-pages/js/voiceover.js"></script>
+{% endblock %}
+{% block main
+%}
+
+<div id="termsPage">
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+
+    <div class="d-flex text-left my-xl-3 my-lg-3 my-md-3 my-3">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 mx-auto p-0">
+            <a class="font-38" href="{{ data.logoPath }}">
+                <i class="fal fa-long-arrow-left ham-icon"></i>
+                <label style="display: none;">back button</label>
+            </a>
+            <div class="home-header-primary m-0">
+                {{ apos.area(data.page, 'termsTitle', {
+                widgets: {
+                'apostrophe-rich-text': {
+                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                styles: [
+                { name: 'Heading', element: 'h2' },
+                { name: 'Paragraph', element: 'p' }
+                ]
+                }
+                }
+                }) }}</div>
+        </div>
+    </div>
+
+    <div class="d-flex text-center">
+        <div class="col-md-8 col-lg-6 col-xl-6 col-11 p-4 mx-auto home-primary-content-bg">
+          <div class="d-flex w-100 align-items-center pb-2">
+              <p id="dynamicVoiceOverContent" class="d-none">aboutContent</p>
+              <div class="read-cont-h1 col-6 col-lg-9 p-0 replaceClass" id="voiceOverTitle"></div>
+              <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty"
+                  id="c730ed34-ce14-4df1-8718-6346cd050c2b">
+                  <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 border-0" id="playButton"
+                      role="button">Play</button>
+                  <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="pauseButton"
+                      role="button">Pause</button>
+                  <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="resumeButton"
+                      role="button">Resume</button>
+
+                  <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                      disabled id="stopButton" role="button">Stop</button>
+              </div>
+
+              <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty" id="androidContainer">
+                  <button class="btn btn-primary play-button mr-2 px-2 px-sm-3" id="playAndroidButton"
+                      role="button">Play</button>
+                  <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                      disabled id="stopAndroidButton" role="button">Stop</button>
+              </div>
+          </div>
+            <div class="footer-content text-left apos-header-para-font" id="aboutContent">
+                {{ apos.area(data.page, 'termssubTitle', {
+                widgets: {
+                'apostrophe-rich-text': {
+                toolbar: [ 'Styles', 'Bold', 'Italic', 'Link', 'Unlink' ],
+                styles: [
+                { name: 'Heading', element: 'h3' },
+                { name: 'Paragraph', element: 'p' }
+                ]
+                }
+                }
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    {% include "../../shared-referal-module/views/searchReferral.html" %}
+    {% include "../../shared-referal-module/views/company.html" %}
+    <!-- <div class="sub-header-bg my-5">
+        <div class="col-md-9 col-lg-7 col-xl-7 py-3 col-12 mx-auto">
+            <div class="py-3 py-md-4">
+                <div class="row w-100 mx-auto">
+                    <div class="col-md-9 col-lg-7 col-xl-6 col-11 mx-auto">
+                        <h2 class="home-referral-primary my-2 my-md-3">Referrals</h2>
+                        <p class="home-referral-secondary my-2 my-md-3">Check and view the status of your referrals</p>
+                    </div>
+                </div>
+                <div class="row py-3 w-100 mx-auto">
+                    <div class="col-md-9 col-lg-7 col-xl-6 col-11 mx-auto secondary">
+                        <div class="input-group">
+                            <span class="input-group-prepend">
+                                <div class="home-primarySearch-bg input-group-text  border-right-0">
+                                    <span style="color: #023047 !important;">
+                                        <i class="fa fa-search font-23"></i>
+                                    </span>
+                                </div>
+                            </span>
+                            <input class="home-primarySearch-bg form-control py-2" type="search"
+                                placeholder="Search referrals" id="searchAllreferrals">
+                            <span class="input-group-append">
+                                <div class="home-secondarySearch-bg input-group-text">
+                                    <span class="px-2 font-weight-bold">Search</span>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+</div>
+{% endblock %}

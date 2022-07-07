@@ -1,0 +1,180 @@
+%font-shared {
+  letter-spacing: 0px;
+  opacity: 1;
+}
+
+%placeHolder-Wrap {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@mixin set-background($color, $opacity) {
+  background: $color 0% 0% no-repeat padding-box !important;
+  @if ($opacity != "") {
+    opacity: $opacity;
+  }
+}
+
+@mixin set-dynamicHeight($height) {
+  height: $height !important;
+}
+
+@mixin set-titleStyles($size, $weight, $color) {
+  @extend %font-shared;
+  font-size: $size;
+  font-weight: $weight;
+  color: $color;
+  //cursor: pointer;
+}
+
+@mixin set-cardStyle($color, $bl, $br, $border, $bordertbOnly) {
+  background: $color 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  opacity: 1;
+  @if ($bordertbOnly == "top") {
+    border-top-left-radius: $bl;
+    border-top-right-radius: $br;
+  } @else if ($bordertbOnly == "bottom") {
+    border-bottom-left-radius: $bl;
+    border-bottom-right-radius: $br;
+  } @else {
+    border-radius: $border;
+  }
+}
+
+//Tooltip custom class
+.tooltip {
+  text-decoration: none;
+  border-bottom: none;
+  color: #36c;
+  outline: none;
+  z-index: 200 !important;
+}
+
+.popover {
+  z-index: 200 !important;
+}
+
+.text-underline {
+  text-decoration: underline !important;
+}
+//set dynamic background color radius
+@mixin set-bgOnly($color) {
+  background: $color 0% 0% no-repeat padding-box !important;
+}
+
+//set dynamic font size font size
+@mixin set-dynamicFont($size, $subValue) {
+  font-size: $size - $subValue;
+}
+
+//set dynamic line height
+@mixin set-dynamicLineHeight($size) {
+  line-height: $size + 5 !important;
+}
+
+//set dynamic border radius
+@mixin set-borderRadius($radius, $position) {
+  @if ($position == "top") {
+    border-top-left-radius: $radius !important;
+    border-top-right-radius: $radius !important;
+  } @else if ($position == "bottom") {
+    border-bottom-left-radius: $radius !important;
+    border-bottom-right-radius: $radius !important;
+  } @else if ($position == "topBottomLeft") {
+    border-top-left-radius: $radius !important;
+    border-bottom-left-radius: $radius !important;
+  } @else if ($position == "topBottomRight") {
+    border-top-right-radius: $radius !important;
+    border-bottom-right-radius: $radius !important;
+  } @else if($position == "all") {
+    border-radius: $radius !important;
+  }
+}
+
+@mixin transform($property) {
+  -webkit-transform: $property;
+  -ms-transform: $property;
+  -ms-transform: $property;
+  -o-transform: $property;
+  transform: $property;
+}
+
+@mixin transition($x...) {
+  -webkit-transition: $x;
+  -moz-transition: $x;
+  -ms-transition: $x;
+  -o-transition: $x;
+  transition: $x;
+}
+
+.text-underline {
+  text-decoration: underline !important;
+}
+
+.h-50px {
+  height: 50px !important;
+}
+
+//Hiding Box shadow for Input type email only for Firefox
+
+@-moz-document url-prefix() {
+  input[type="email"] {
+    box-shadow: none !important;
+  }
+}
+
+@mixin placeholder($color) {
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select ::-webkit-input-placeholder {
+    /* WebKit, Blink, Edge */
+    color: $color !important;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select :-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: $color !important;
+    opacity: 1;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select ::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: $color !important;
+    opacity: 1;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select :-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: $color !important;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select ::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: $color !important;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea,
+  .custom-select ::placeholder {
+    /* Most modern browsers support this now. */
+    color: $color !important;
+  }
+}

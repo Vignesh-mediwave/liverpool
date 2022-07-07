@@ -1,0 +1,199 @@
+{% extends "layout.html" %}
+{% block extraBody %}
+<script src="/modules/liverpool-orcha-module/js/orcha.js"></script>
+<script src="/modules/shared-referal-module/js/searchReferral.js"></script>
+<script src="/modules/liverpool-mental-health-pages/js/voiceover.js"></script>
+
+{% endblock %}
+{% block main
+%}
+
+<div id="orchaPage">
+    <!-- Loader start -->
+    <div class="overlay" id="loader">
+        <div class="overlay__inner">
+            <div class="overlay__content">
+                <div class="lds-spinner">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Loader end -->
+    <div class="top-arrow-container pd-container" id="searchBar">
+        <!-- <a href="{{data.bckBtn}}" class="previous-link"> <img src="/modules/my-apostrophe-assets/img/Back.svg"
+                class="leftArrow cursor-pointer"></a> -->
+        <div class="col-12 px-0 mb-sm-3"><a href="{{data.bckBtn}}" class="previous-link"><i
+                    class="fal fa-long-arrow-left fa-2x ham-icon "></i></a>
+
+            <div class="resource_text pb-sm-0 pt-0">Apps</div>
+        </div>
+        <input hidden id="resources" value="{{data.searchApps|dump}}">
+        <div class="input-group home-primary-content-bg">
+            <span class="input-group-prepend">
+                <div class="home-primarySearch-bg input-group-text  border-right-0 height-44">
+                    <span style="color: #023047 !important;">
+                        <i class="fal fa-search font-23"></i>
+                    </span>
+                </div>
+            </span>
+            <input class="height-44 home-primarySearch-bg border-0 form-control py-2" type="text" v-model="searchQuery"
+                placeholder="Search your app" id="example-search-input" @input="filterApps()">
+            <!-- <div class="search-wrapper">
+
+                <form class="wid-80">
+                <input type="text" name="focus" required class="search-box height-44 home-primarySearch-bg border-0 form-control py-2" v-model="searchQuery"
+                placeholder="Search your app"
+                id="example-search-input"
+                @input="ilterApps()"  />
+                <button class="close-icon" type="reset"></button>
+                </form>
+                </div> -->
+        </div>
+        <div id="hideserachblock" class="d-none">
+            {% raw %}
+            <!-- Search functionality start-->
+            <div v-if="showSearchResults" class="resource_search_text my-3">Search results for “what is
+                {{searchQuery}}?”</div>
+            <div v-if="showSearchResults" class="search-wrap primary-search-radius">
+                <div class="primary-search-radius home-primary-content-bg cursor-pointer">
+                    <div v-if="filteredData.length">
+                        <div v-for="item in filteredData" class="border-bottom-primary card-body px-2 py-3">
+                            <a :href=" item.custom_url ? item.custom_url : item._url ">
+                                <div class="d-flex align-items-center">
+                                    <p class="question-font my-0 mx-2 mx-md-4 text-left ellipse-text-dropdown">
+                                        {{item.title}}
+                                    </p>
+                                    <ul class="my-0 link-text mx-2 fixedWidthSetLI"
+                                        style="list-style: inside !important;">
+                                        <li>{{item.platform}}</li>
+                                    </ul>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div v-if="!filteredData.length">
+                        <p class="home-header-secondary py-3 pl-4">No results found</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search functionality end-->
+            {% endraw %}
+        </div>
+        <div class="text_inside_cont card-set-container-bg home-primary-content-bg">
+            <div class="d-flex w-100 align-items-center ">
+                <p id="dynamicVoiceOverContent" class="d-none">AppsVoiceOverContent</p>
+                <div class="replaceClass col-6 col-lg-9 p-0"></div>
+                <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty"
+                    id="c730ed34-ce14-4df1-8718-6346cd050c2b">
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 border-0" id="playButton"
+                        role="button">Play</button>
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="pauseButton"
+                        role="button">Pause</button>
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3 d-none border-0" id="resumeButton"
+                        role="button">Resume</button>
+
+                    <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                        disabled id="stopButton" role="button">Stop</button>
+                </div>
+
+                <div class="p-0 col-6 col-lg-3 justify-content-end d-none checkEmpty" id="androidContainer">
+                    <button class="btn btn-primary play-button mr-2 px-2 px-sm-3" id="playAndroidButton"
+                        role="button">Play</button>
+                    <button style="opacity: 0.4 !important;" class="btn btn-primary stop-button px-2 px-sm-3 border-0"
+                        disabled id="stopAndroidButton" role="button">Stop</button>
+                </div>
+            </div>
+            <h5 class="logout-font font-weight-bold m-0 pt-2" id="AppsVoiceOverContent">
+                On this page, you can access a range of useful websites and apps
+            </h5>
+        </div>
+        </a>
+        <div class="text_inside_play-store">
+            {% raw %}
+            <div class='d-flex'>
+                <div class="">
+                    <img class="panda-img" :src="appObj.thumbnail" />
+                </div>
+                <div class="title-cont-top">
+                    <div class="hearder-cont-h1">
+                        {{appObj.appName}} - {{appObj.score}}
+                    </div>
+                    <!-- <div class="para-cont-p">
+                        stress, depression & anxiety therapy chatbot
+                    </div> -->
+                </div>
+            </div>
+            <div v-if="appObj.platform=='Android'" class="py-3">
+                <img class="google-icon" src="/modules/my-apostrophe-assets/img/google-play-badge.svg" height="30" />
+            </div>
+            <div v-if="appObj.platform=='iOS'" class="py-3">
+                <img class="google-icon" src="/modules/my-apostrophe-assets/img/app-store-badge.svg" />
+            </div>
+            {{appObj.description}}
+            <div class="py-4 text-left d-flex">
+                <a :href="appObj.downloadLink" target="_blank">
+                    <button type="button" class="btn-download px-md-4 py-1 px-3 mx-auto w-100"><span
+                            class="btn-quaternary-text">DOWNLOAD
+                        </span></button>
+                </a>
+            </div>
+            {% endraw %}
+        </div>
+
+        <div class="selectSource">
+            More apps to download
+        </div>
+        {% if data .orchaApps and data.orchaApps.length > 1 %}
+        <div class="large-toggle-cont">
+            <div class="row mr-0 ml-0 w-100">
+                {% for orchaApps in data.orchaApps %}
+                {% if orchaApps.id != data.currentApp %}
+                <div class="col-4 col-md-2 padding-set-equal">
+                    <a class="text-decoration-none" href="/downloads?app_id={{orchaApps.id}}">
+                        <div class="img-cont-app position-relative">
+                            <img class="panda-img" src="{{orchaApps.thumbnail}}" />
+                            {% if orchaApps.platform == 'Android' %}
+                            <img src="/modules/my-apostrophe-assets/img/android.svg" width="60" height="40"
+                                class="cursor-pointer img-pos" alt="">
+                            {% endif %}
+                            {% if orchaApps.platform == 'iOS' %}
+                            <img src="/modules/my-apostrophe-assets/img/ios.svg" width="60" height="40"
+                                class="cursor-pointer img-pos" alt="">
+                            {% endif %}
+                        </div>
+                        <div class="text-cont-app text-container-wrap py-2">
+                            {{orchaApps.appName}}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if data .orchaApps and data.orchaApps.length == 1 %}
+        <div class="large-toggle-cont">
+            <div class="row mr-0 ml-0 w-100 text-center py-3">
+                No apps found
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% include "../../shared-referal-module/views/searchReferral.html" %}
+    {% include "../../shared-referal-module/views/company.html" %}
+</div>
+{% endblock %}
